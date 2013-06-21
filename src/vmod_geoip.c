@@ -3,7 +3,7 @@
  * GeoIP API: http://www.maxmind.com/app/c
  *
  * See file README.rst for usage instructions
- * 
+ *
  * This code is licensed under a MIT-style License, see file LICENSE
 */
 
@@ -25,7 +25,9 @@
 int
 init_function(struct vmod_priv *pp, const struct VCL_conf *conf)
 {
-	// first call to lookup functions initializes pp
+	pp->priv = GeoIP_new(GEOIP_MEMORY_CACHE);
+	pp->free = (vmod_priv_free_f *)GeoIP_delete;
+	GeoIP_set_charset((GeoIP *)pp->priv, GEOIP_CHARSET_UTF8);
 	return (0);
 }
 
@@ -34,7 +36,7 @@ init_priv(struct vmod_priv *pp) {
 	// The README says:
 	// If GEOIP_MMAP_CACHE doesn't work on a 64bit machine, try adding
 	// the flag "MAP_32BIT" to the mmap call. MMAP is not avail for WIN32.
-	pp->priv = GeoIP_new(GEOIP_MMAP_CACHE);
+	pp->priv = GeoIP_new(GEOIP_MEMORY_CACHE);
 	pp->free = (vmod_priv_free_f *)GeoIP_delete;
 	GeoIP_set_charset((GeoIP *)pp->priv, GEOIP_CHARSET_UTF8);
 }
